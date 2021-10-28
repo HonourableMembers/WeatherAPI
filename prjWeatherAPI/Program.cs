@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
 
 namespace prjWeatherAPI
 {
@@ -14,7 +15,17 @@ namespace prjWeatherAPI
                 try
                 {
                     MainLoop();
-                    success = true;
+                    Console.WriteLine("\nCheck again? (Enter 'Y' to check again. Any other key to finish program.)");
+
+                    if (Console.ReadLine().ToLower() == "y")
+                    {
+                        success = false;
+                        Console.Clear();
+                    }
+                    else
+                    {
+                        success = true;
+                    }
                 }
                 catch (Exception)
                 {
@@ -24,22 +35,20 @@ namespace prjWeatherAPI
             }
         }
 
-        public static void MainLoop()
+        public static void MainLoop()       
         {
             Console.WriteLine("Enter City Name: ");
             string CityName = Console.ReadLine();
 
-            Console.WriteLine("\n\n");
+            City c = new City(CityName);
 
-            City jCity = new City(CityName);
-
-            Console.WriteLine($"City Name: {jCity.Name}\n" +
-                $"Current Temp: {jCity.Temp}\n" +
-                $"Feels Like: {jCity.RealFeel}\n" +
-                $"Min/Max Temps: {jCity.Min}/{jCity.Max}\n" +
-                $"Current Humidity: {jCity.Humidity}\n" +
-                $"Current Wind Speed: {jCity.Wind}\n" +
-                $"City Description: {jCity.Description}");
+            Console.WriteLine($"\nCity Name: {c.Name}\n" +
+                $"Current Temp: {c.Temp}\n" +
+                $"Feels Like: {c.RealFeel}\n" +
+                $"Min/Max Temps: {c.Min}/{c.Max}\n" +
+                $"Current Humidity: {c.Humidity}\n" +
+                $"Current Wind Speed: {c.Wind}\n" +
+                $"Description: {c.Description}");
         }
     }
 }

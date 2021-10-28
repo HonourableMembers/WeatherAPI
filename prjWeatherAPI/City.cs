@@ -12,6 +12,7 @@ namespace prjWeatherAPI
     class City
     {
         const string APP_ID = "28f42846d5d8eeef56519508bf485887";
+        private string query;
 
         private string name;
         private string temp;
@@ -22,25 +23,28 @@ namespace prjWeatherAPI
         private string wind;
         private string realFeel;
 
-        public string Name { get => name; set => name = value; }
-        public string Temp { get => temp; set => temp = value; }
-        public string Min { get => min; set => min = value; }
-        public string Max { get => max; set => max = value; }
-        public string Humidity { get => humidity; set => humidity = value; }
-        public string Description { get => description; set => description = value; }
-        public string Wind { get => wind; set => wind = value; }
-        public string RealFeel { get => realFeel; set => realFeel = value; }
+        public string Name { get => name; private set => name = value; }
+        public string Temp { get => temp; private set => temp = value; }
+        public string Min { get => min; private set => min = value; }
+        public string Max { get => max; private set => max = value; }
+        public string Humidity { get => humidity; private set => humidity = value; }
+        public string Description { get => description; private set => description = value; }
+        public string Wind { get => wind; private set => wind = value; }
+        public string RealFeel { get => realFeel; private set => realFeel = value; }
 
         public JObject response(string CityName)
         {
-
-            string query = String.Format("http://api.openweathermap.org/data/2.5/weather?q={0}&appid={1}&units=metric", CityName, APP_ID);
-            JObject response = JObject.Parse(new System.Net.WebClient().DownloadString(query));
-
-            return response;
+            query = String.Format($"http://api.openweathermap.org/data/2.5/weather?q={CityName}&appid={APP_ID}&units=metric");
+            return JObject.Parse(new System.Net.WebClient().DownloadString(query));
         }
 
+
         public City(string CityName)
+        {
+            UpdateCity(CityName);
+        }
+
+        public void UpdateCity(string CityName)
         {
             JObject api = response(CityName);
 
@@ -52,11 +56,22 @@ namespace prjWeatherAPI
             Description = api.SelectToken("weather[0].description").ToString();
             Wind = api.SelectToken("wind.speed").ToString();
             RealFeel = api.SelectToken("main.feels_like").ToString();
+
+            ToTextFile();
         }
 
         public string BaseQuery()
         {
             return response(this.Name).ToString();
+        }
+
+        public void ToTextFile()
+        {
+            using (StreamWriter sw = new StreamWriter("request.txt"))
+            {
+                sw.WriteLine(query + "\n");
+                sw.Write(this.BaseQuery());
+            }
         }
     }
 }
